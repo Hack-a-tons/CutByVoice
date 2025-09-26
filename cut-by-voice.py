@@ -7,6 +7,7 @@ from openai import AzureOpenAI
 from dotenv import load_dotenv
 
 CREATED_FILES_FILE = ".created_files.json"
+PROMPT_FILE = "prompts/system_prompt.txt"
 
 def main():
     load_dotenv()
@@ -22,16 +23,20 @@ def main():
         user_dir = os.path.join("users", str(uuid.uuid4()))
 
     os.makedirs(user_dir, exist_ok=True)
+    
+    original_cwd = os.getcwd()
     os.chdir(user_dir)
 
     created_files = load_created_files()
 
-    shell_command = convert_to_shell_command(args.command, created_files)
+    shell_command = convert_to_shell_command(args.command, created_files, original_cwd)
 
     print(f"Executing command: {shell_command}")
     execute_command(shell_command, created_files)
 
     save_created_files(created_files)
+    
+    os.chdir(original_cwd)
 
 def load_created_files() -> list:
     if os.path.exists(CREATED_FILES_FILE):
@@ -43,7 +48,10 @@ def save_created_files(created_files: list):
     with open(CREATED_FILES_FILE, "w") as f:
         json.dump(created_files, f)
 
-def convert_to_shell_command(command: str, created_files: list) -> str:
+def convert_to_shell_command(command: str, created_files: list, original_cwd: str) -> str:
+    with open(os.path.join(original_cwd, PROMPT_FILE), "r") as f:
+        system_prompt = f.read()
+
     client = AzureOpenAI(
         azure_endpoint=os.environ.get("AZURE_OPENAI_ENDPOINT"),
         api_key=os.environ.get("AZURE_OPENAI_KEY"),
@@ -51,7 +59,7 @@ def convert_to_shell_command(command: str, created_files: list) -> str:
     )
 
     messages = [
-        {"role": "system", "content": "You are a helpful assistant that converts natural language commands to shell commands. You can use ls, du, and other common shell commands. You should only return the shell command, without any explanation. For example, if the user says 'Take the last frame of input.mp4', you should return 'ffmpeg -y -sseof -1 -i input.mp4 -vframes 1 last_frame.png'. If the user asks 'What was the last file I added?', and the last created file is 'last_frame.png', you should return 'echo last_frame.png'."},
+        {"role": "system", "content": system_prompt},
         {"role": "user", "content": command},
     ]
     if created_files:
@@ -64,9 +72,19 @@ def convert_to_shell_command(command: str, created_files: list) -> str:
         max_tokens=100,
     )
 
-    return response.choices[0].message.content
+    shell_command = response.choices[0].message.content
+
+    if "pwd" in shell_command:
+        return "echo 'pwd command is not allowed'"
+
+    return shell_command
 
 def execute_command(command: str, created_files: list):
+    # Security check
+    if ".." in command or "~" in command or "/" in command:
+        print("Error: command contains invalid characters.")
+        return
+
     try:
         result = subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
         print(result.stdout)
