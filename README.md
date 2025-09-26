@@ -1,60 +1,66 @@
-# 🎬 CutByVoice  
+# 🎬 CutByVoice CLI
 
-**Edit videos using natural language — powered by FFmpeg.**  
+**Edit videos and manage your files using natural language — powered by AI and shell commands.**
 
-CutByVoice lets you describe your edits in plain text or voice commands, and it automatically generates the right FFmpeg instructions to process your video clips. No timelines, no complex commands — just say what you want, and get your cut.  
-
----
-
-## 🚀 Features  
-- 🗣️ **Natural language editing**: “Take the first 5 seconds of clip1 and append the last 10 seconds of clip2.”  
-- 🎞️ **Automatic FFmpeg execution**: Converts instructions into precise video commands.  
-- 🔄 **Iterative refinement**: “Make it slower… add a fade… remove silence at the start.”  
-- 💻 **Text or voice input**: Type or speak your edits.  
-- ⚡ **Fast & lightweight**: Runs on a backend powered by FFmpeg.  
+CutByVoice is a command-line tool that lets you describe your edits and file management tasks in plain text. It automatically converts your instructions into the right shell commands and executes them for you.
 
 ---
 
-## 🛠️ How It Works  
-1. Upload your video clips.  
-2. Enter an instruction like:  
+## 🚀 Features
 
-Take the first 5 seconds of intro.mp4,
-then add the last 10 seconds of outro.mp4,
-and insert fade transition in between.
-
-3. CutByVoice parses your request → builds an FFmpeg command → executes it.  
-4. Download your finished video. 🎉  
+- 🗣️ **Natural language commands**: “Take the last frame of input.mp4”, "List all files by size", "What is the total size occupied by all my files?".
+- 🎞️ **Automatic command generation**: Converts instructions into precise `ffmpeg` and other shell commands.
+- 💻 **User-specific workspaces**: Each user gets their own directory for their files. Authenticated users have permanent directories, while non-authenticated users get a new directory for each session.
 
 ---
 
-## 📦 Tech Stack  
-- **Backend**: Python + FFmpeg  
-- **NLP**: OpenAI / LLM parsing of natural language instructions  
-- **Frontend**: (optional) Simple web UI for uploads + prompts  
-- **Voice input**: Speech-to-text API (Whisper / Vosk / other)  
+## 🛠️ How It Works
+
+1.  **Run the CLI**:
+    ```bash
+    python cut-by-voice.py "Your command here"
+    ```
+2.  **Provide a user (optional)**:
+    ```bash
+    python cut-by-voice.py "Your command here" --user your_username
+    ```
+3.  **CutByVoice parses your request** → builds a shell command → executes it.
+4.  **See the output** in your terminal.
 
 ---
 
-## 🔮 Roadmap  
-- [ ] Support live previews of edits  
-- [ ] Add background music insertion  
-- [ ] Enable export in multiple formats (MP4, WebM, GIF)  
-- [ ] Multi-turn conversations for editing sessions  
-- [ ] Collaborative editing with shared projects  
+## 📦 Tech Stack
+
+- **CLI**: Python
+- **NLP**: Azure OpenAI
+- **Shell commands**: `ffmpeg`, `ls`, `du`, etc.
 
 ---
 
-## 🤝 Contributing  
-Pull requests are welcome! For major changes, please open an issue first to discuss what you’d like to change.  
+## 📂 User Workspaces
+
+CutByVoice provides a simple way to manage your files by giving each user their own workspace.
+
+- **Authenticated users**: If you provide a username using the `--user` flag, a permanent directory will be created for you in the `users` directory. All your files and command history will be stored there.
+- **Non-authenticated users**: If you don't provide a username, a new temporary directory will be created for you for each session. The directory will be deleted when the session ends.
 
 ---
 
-## 📜 License  
-MIT License — free to use, modify, and share.  
+## 🔮 Roadmap
+
+- [ ] Support for more complex `ffmpeg` commands.
+- [ ] Improved file history and memory.
+- [ ] Web interface for easier interaction.
+- [ ] Collaborative editing with shared projects.
 
 ---
 
-## 🌐 Links  
-- **Repository**: [Hack-a-tons/CutByVoice](https://github.com/Hack-a-tons/CutByVoice)  
-- **Hackathon Demo**: _coming soon_  
+## 🤝 Contributing
+
+Pull requests are welcome! For major changes, please open an issue first to discuss what you’d like to change.
+
+---
+
+## 📜 License
+
+MIT License — free to use, modify, and share.
