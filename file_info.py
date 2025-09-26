@@ -12,8 +12,8 @@ def get_file_info(filename):
 
         # Get video info using ffprobe
         try:
-            cmd = f"ffprobe -v quiet -print_format json -show_format -show_streams \"{filename}\""
-            result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+            cmd = ["ffprobe", "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", filename]
+            result = subprocess.run(cmd, check=True, capture_output=True, text=True)
             info = json.loads(result.stdout)
 
             duration = info.get("format", {}).get("duration", "N/A")
@@ -24,8 +24,14 @@ def get_file_info(filename):
                 dimensions = f"{width}x{height}"
                 r_frame_rate = video_stream.get("r_frame_rate", "N/A/N/A")
                 if r_frame_rate != "N/A/N/A":
-                    num, den = r_frame_rate.split('/')
-                    framerate = f"{int(num) / int(den):.2f} fps"
+                    try:
+                        num, den = r_frame_rate.split('/')
+                        if int(den) != 0:
+                            framerate = f"{int(num) / int(den):.2f} fps"
+                        else:
+                            framerate = "N/A"
+                    except (ValueError, ZeroDivisionError):
+                        framerate = "N/A"
                 else:
                     framerate = "N/A"
             else:
