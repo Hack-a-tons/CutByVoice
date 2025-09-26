@@ -28,8 +28,16 @@ def main():
     os.chdir(user_dir)
 
     created_files = load_created_files()
+    last_video = created_files[-1] if created_files else None
 
-    shell_command = convert_to_shell_command(args.command, created_files, original_cwd)
+    # Ask for clarification if needed
+    video_files = [f for f in os.listdir() if f.endswith(".mp4")]
+    if len(video_files) > 1 and "my last video" not in args.command and not any(f in args.command for f in video_files):
+        print("There are multiple video files in your directory. Please specify which one to use.")
+        print("Available videos: " + ", ".join(video_files))
+        return
+
+    shell_command = convert_to_shell_command(args.command, last_video, original_cwd)
 
     print(f"Executing command: {shell_command}")
     execute_command(shell_command, created_files)
@@ -56,7 +64,7 @@ def sanitize_command(command: str) -> str:
         return "echo 'Error: command cannot start with /.'"
     return command
 
-def convert_to_shell_command(command: str, created_files: list, original_cwd: str) -> str:
+def convert_to_shell_command(command: str, last_video: str, original_cwd: str) -> str:
     with open(os.path.join(original_cwd, PROMPT_FILE), "r") as f:
         system_prompt = f.read()
 
@@ -70,8 +78,8 @@ def convert_to_shell_command(command: str, created_files: list, original_cwd: st
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": command},
     ]
-    if created_files:
-        messages.append({"role": "system", "content": f"Here is a list of recently created files: {', '.join(created_files)}"})
+    if last_video:
+        messages.append({"role": "system", "content": f"The last video was: {last_video}"})
 
 
     response = client.chat.completions.create(
@@ -94,7 +102,8 @@ def execute_command(command: str, created_files: list):
         if "ffmpeg" in command:
             # A bit of a hack to get the output file name
             output_file = command.split(" ")[-1]
-            created_files.append(output_file)
+            if output_file not in created_files:
+                created_files.append(output_file)
     except subprocess.CalledProcessError as e:
         print(f"Error executing command: {e}")
         print(e.stderr)

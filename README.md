@@ -8,10 +8,12 @@ CutByVoice is a command-line tool that lets you describe your edits and file man
 
 ## 🚀 Features
 
-- 🗣️ **Natural language commands**: “Take the last frame of input.mp4”, "List all files by size", "What is the total size occupied by all my files?".
-- 🎞️ **Automatic command generation**: Converts instructions into precise `ffmpeg` and other shell commands.
-- 💻 **User-specific workspaces**: Each user gets their own directory for their files. Authenticated users have permanent directories, while non-authenticated users get a new directory for each session.
-- 🔒 **Security**: The tool includes security checks to prevent malicious commands from being executed.
+- 🗣️ **Natural language commands**: Process video, audio, and images with `ffmpeg`, and manage files with `ls`, `du`, etc.
+- 🎞️ **Automatic command generation**: Converts instructions into precise shell commands.
+- 🧠 **Context-aware**: Remembers the last video you worked on.
+- 🤔 **Interactive**: Asks for clarification when the command is ambiguous.
+- 💻 **User-specific workspaces**: Each user gets their own directory for their files.
+- 🔒 **Security**: Includes security checks to prevent malicious commands.
 
 ---
 
@@ -34,7 +36,30 @@ CutByVoice is a command-line tool that lets you describe your edits and file man
 
 - **CLI**: Python
 - **NLP**: Azure OpenAI
-- **Shell commands**: `ffmpeg`, `ls`, `du`, etc.
+- **Shell commands**: `ffmpeg`, `ffprobe`, `ls`, `du`, etc.
+
+---
+
+## Examples
+
+### Video Processing
+
+-   **Get video information**:
+    -   `"How many frames are in my last video?"`
+    -   `"What is the framerate of my last video?"`
+    -   `"What is the duration of my last video?"`
+-   **Simple edits**:
+    -   `"Create a video from the first 5 seconds of my last video."`
+    -   `"Take the last frame of input.mp4"`
+-   **Complex edits**:
+    -   `"Concatenate video1.mp4 and video2.mp4."`
+    -   `"Take the first half of video1.mp4, the first half of video2.mp4, and put the music from video1.mp4 on top of the output video."`
+
+### File Management
+
+-   `"List all files by size"`
+-   `"What is the total size occupied by all my files?"`
+-   `"What was the last file I added?"`
 
 ---
 
@@ -43,7 +68,7 @@ CutByVoice is a command-line tool that lets you describe your edits and file man
 CutByVoice provides a simple way to manage your files by giving each user their own workspace.
 
 - **Authenticated users**: If you provide a username using the `--user` flag, a permanent directory will be created for you in the `users` directory. All your files and command history will be stored there.
-- **Non-authenticated users**: If you don't provide a username, a new temporary directory will be created for you for each session. The directory will be deleted when the session ends.
+- **Non-authenticated users**: If you don't provide a username, a new temporary directory will be created for you for each session.
 
 ---
 
