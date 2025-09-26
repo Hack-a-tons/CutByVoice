@@ -11,6 +11,7 @@ CutByVoice is a command-line tool that lets you describe your edits and file man
 - 🗣️ **Natural language commands**: “Take the last frame of input.mp4”, "List all files by size", "What is the total size occupied by all my files?".
 - 🎞️ **Automatic command generation**: Converts instructions into precise `ffmpeg` and other shell commands.
 - 💻 **User-specific workspaces**: Each user gets their own directory for their files. Authenticated users have permanent directories, while non-authenticated users get a new directory for each session.
+- 🔒 **Security**: The tool includes security checks to prevent malicious commands from being executed.
 
 ---
 
@@ -43,6 +44,16 @@ CutByVoice provides a simple way to manage your files by giving each user their 
 
 - **Authenticated users**: If you provide a username using the `--user` flag, a permanent directory will be created for you in the `users` directory. All your files and command history will be stored there.
 - **Non-authenticated users**: If you don't provide a username, a new temporary directory will be created for you for each session. The directory will be deleted when the session ends.
+
+---
+
+## 🔒 Security
+
+The tool has a security layer that prevents the execution of malicious commands. It checks for the following:
+
+-   Directory traversal characters like `..` and `~`.
+-   Commands starting with `/`.
+-   The `pwd` command is disabled.
 
 ---
 

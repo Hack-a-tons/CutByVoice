@@ -48,6 +48,14 @@ def save_created_files(created_files: list):
     with open(CREATED_FILES_FILE, "w") as f:
         json.dump(created_files, f)
 
+def sanitize_command(command: str) -> str:
+    # Add more sanitization rules here
+    if ".." in command or "~" in command:
+        return "echo 'Error: command contains invalid characters.'"
+    if command.strip().startswith("/"):
+        return "echo 'Error: command cannot start with /.'"
+    return command
+
 def convert_to_shell_command(command: str, created_files: list, original_cwd: str) -> str:
     with open(os.path.join(original_cwd, PROMPT_FILE), "r") as f:
         system_prompt = f.read()
@@ -77,14 +85,9 @@ def convert_to_shell_command(command: str, created_files: list, original_cwd: st
     if "pwd" in shell_command:
         return "echo 'pwd command is not allowed'"
 
-    return shell_command
+    return sanitize_command(shell_command)
 
 def execute_command(command: str, created_files: list):
-    # Security check
-    if ".." in command or "~" in command or "/" in command:
-        print("Error: command contains invalid characters.")
-        return
-
     try:
         result = subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
         print(result.stdout)
