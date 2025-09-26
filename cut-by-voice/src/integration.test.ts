@@ -1,5 +1,6 @@
+/// <reference types="vitest/globals" />
 import { describe, it, expect, vi } from 'vitest';
-import app from './api-router/index';
+import ApiRouterService from './api-router/index';
 import { Env } from './api-router/raindrop.gen';
 import VideoProcessorService from './video-processor/index';
 import * as apiRouterModel from './api-router/model';
@@ -47,6 +48,9 @@ const mockEnv: Env = {
   } as any,
 };
 
+const service = new ApiRouterService({} as any, mockEnv);
+const app = service.fetch;
+
 describe('integration', () => {
     it('should upload a file and process it', async () => {
         const file = new File(['test'], 'test.txt', { type: 'text/plain' });
@@ -55,10 +59,11 @@ describe('integration', () => {
 
         (apiRouterModel.saveFile as vi.Mock).mockResolvedValue(undefined);
 
-        const uploadRes = await app.request('/upload', {
+        const uploadReq = new Request('http://localhost/upload', {
             method: 'POST',
             body: formData,
-        }, mockEnv);
+        });
+        const uploadRes = await app(uploadReq, mockEnv, {} as any);
 
         expect(uploadRes.status).toBe(200);
 
@@ -80,13 +85,14 @@ describe('integration', () => {
         (mockVideoProcessorEnv.VIDEO_STORAGE.get as vi.Mock).mockResolvedValue(mockFile);
         (videoProcessorModel.executeCommand as vi.Mock).mockResolvedValue(undefined);
 
-        const controlRes = await app.request('/videos/test.txt/control', {
+        const controlReq = new Request('http://localhost/videos/test.txt/control', {
             method: 'POST',
             body: JSON.stringify({ command: 'one frame forward' }),
             headers: {
                 'Content-Type': 'application/json',
             },
-        }, mockEnv);
+        });
+        const controlRes = await app(controlReq, mockEnv, {} as any);
 
         expect(controlRes.status).toBe(200);
         expect(apiRouterModel.saveFile).toHaveBeenCalledWith(expect.any(File), mockEnv);

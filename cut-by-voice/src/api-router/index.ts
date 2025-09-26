@@ -27,9 +27,9 @@
  */
 
 import { Hono } from 'hono';
-import { Context } from 'hono';
-import controller from './controller';
+import { Service } from '@liquidmetal-ai/raindrop-framework';
 import { Env } from './raindrop.gen';
+import controller from './controller';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -59,4 +59,6 @@ app.post('/videos/:filename/control', async (c) => {
     return c.json({ success: true });
 });
 
-export default app;
+export default class ApiRouterService extends Service<Env> {
+  fetch = app.fetch;
+}

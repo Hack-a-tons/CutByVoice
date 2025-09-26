@@ -1,5 +1,6 @@
+/// <reference types="vitest/globals" />
 import { describe, it, expect, vi } from 'vitest';
-import app from './index';
+import ApiRouterService from './index';
 import { Env } from './raindrop.gen';
 import controller from './controller';
 
@@ -27,19 +28,24 @@ const mockEnv: Env = {
     } as any,
 };
 
+const service = new ApiRouterService({} as any, mockEnv);
+const app = service.fetch;
+
 describe('api-router', () => {
   it('should upload a file', async () => {
     const file = new File(['test'], 'test.txt', { type: 'text/plain' });
     const formData = new FormData();
     formData.append('file', file);
 
-    const res = await app.request('/upload', {
-      method: 'POST',
-      body: formData,
-    }, mockEnv);
+    const req = new Request('http://localhost/upload', {
+        method: 'POST',
+        body: formData,
+    });
+    const res = await app(req, mockEnv, {} as any);
+
 
     expect(res.status).toBe(200);
-    const json = await res.json();
+    const json = await res.json() as { success: boolean, filename: string };
     expect(json.success).toBe(true);
     expect(json.filename).toBe('test.txt');
     expect(controller.uploadVideo).toHaveBeenCalledWith(expect.any(File), mockEnv);
@@ -56,7 +62,8 @@ describe('api-router', () => {
     });
     (controller.getVideo as vi.Mock).mockResolvedValue(response);
 
-    const res = await app.request('/videos/test.txt', {}, mockEnv);
+    const req = new Request('http://localhost/videos/test.txt');
+    const res = await app(req, mockEnv, {} as any);
 
     expect(res.status).toBe(200);
     const text = await res.text();
@@ -65,16 +72,17 @@ describe('api-router', () => {
   });
 
   it('should control a video', async () => {
-    const res = await app.request('/videos/test.txt/control', {
-      method: 'POST',
-      body: JSON.stringify({ command: 'one frame forward' }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }, mockEnv);
+    const req = new Request('http://localhost/videos/test.txt/control', {
+        method: 'POST',
+        body: JSON.stringify({ command: 'one frame forward' }),
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+    const res = await app(req, mockEnv, {} as any);
 
     expect(res.status).toBe(200);
-    const json = await res.json();
+    const json = await res.json() as { success: boolean };
     expect(json.success).toBe(true);
     expect(controller.controlVideo).toHaveBeenCalledWith('test.txt', 'one frame forward', mockEnv);
   });

@@ -13,6 +13,7 @@ const mockEnv: Env = {
   },
   AI: {} as any,
   annotation: {} as any,
+  API_ROUTER: {} as any,
   logger: {
     debug: vi.fn(),
     info: vi.fn(),
@@ -20,7 +21,6 @@ const mockEnv: Env = {
     error: vi.fn(),
   } as any,
   tracer: {} as any,
-  VIDEO_PROCESSOR: {} as any,
   VIDEO_STORAGE: {} as any,
 };
 
