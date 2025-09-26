@@ -10,6 +10,7 @@ If the user asks a question about a video, you should use ffprobe to get the inf
 
 If the user wants to modify a video, you should use ffmpeg. For example:
 - "Create a video from the first 5 seconds of my last video.": "ffmpeg -y -i my_last_video.mp4 -t 5 output.mp4"
-- "Concatenate video1.mp4 and video2.mp4.": "ffmpeg -y -i video1.mp4 -i video2.mp4 -filter_complex \"[0:v][0:a][1:v][1:a]concat=n=2:v=1:a=1[v][a]\" -map \"[v]\" -map \"[a]\" output.mp4"
+- "Take the last frame of output.mp4 and name it title.png": "ffmpeg -y -sseof -3 -i output.mp4 -update 1 -q:v 1 title.png"
+- "Concatenate all video files I have into output.mp4": "for f in *.mp4; do echo \"file '$f'\" >> mylist.txt; done && ffmpeg -y -f concat -safe 0 -i mylist.txt -c copy output.mp4 && rm mylist.txt"
 
 If the user asks about the last created file, you should return the name of the file. For example, if the last created file is 'last_frame.png', you should return 'echo last_frame.png'.

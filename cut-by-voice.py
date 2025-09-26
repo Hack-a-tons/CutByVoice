@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 
 CREATED_FILES_FILE = ".created_files.json"
 PROMPT_FILE = "prompts/system_prompt.txt"
+YELLOW = '\033[0;33m'
+NC = '\033[0m' # No Color
 
 def main():
     load_dotenv()
@@ -20,6 +22,8 @@ def main():
     parser.add_argument("--add-file", type=str, help="The local path or URL of the file to add.")
     args = parser.parse_args()
 
+    original_cwd = os.getcwd()
+
     if args.user:
         user_dir = os.path.join("users", args.user)
     else:
@@ -27,11 +31,10 @@ def main():
 
     os.makedirs(user_dir, exist_ok=True)
     
-    original_cwd = os.getcwd()
     os.chdir(user_dir)
 
     if args.add_file:
-        add_file(args.add_file)
+        add_file(args.add_file, original_cwd)
         os.chdir(original_cwd)
         return
 
@@ -41,7 +44,7 @@ def main():
         return
 
     if not os.listdir():
-        print("There are no files in your directory.")
+        print(f"{YELLOW}There are no files in your directory.{NC}")
         os.chdir(original_cwd)
         return
 
@@ -57,7 +60,7 @@ def main():
     
     os.chdir(original_cwd)
 
-def add_file(file_path: str):
+def add_file(file_path: str, original_cwd: str):
     created_files = load_created_files()
     if file_path.startswith("http"):
         # Download from URL
@@ -68,21 +71,23 @@ def add_file(file_path: str):
             with open(filename, "wb") as f:
                 for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
-            print(f"File downloaded: {filename}")
+            print(f"{YELLOW}File downloaded: {filename}{NC}")
             if filename not in created_files:
                 created_files.append(filename)
         except requests.exceptions.RequestException as e:
-            print(f"Error downloading file: {e}")
+            print(f"{YELLOW}Error downloading file: {e}{NC}")
     else:
         # Copy local file
+        if not os.path.isabs(file_path):
+            file_path = os.path.join(original_cwd, file_path)
         try:
             shutil.copy(file_path, ".")
             filename = os.path.basename(file_path)
-            print(f"File copied: {filename}")
+            print(f"{YELLOW}File copied: {filename}{NC}")
             if filename not in created_files:
                 created_files.append(filename)
         except FileNotFoundError:
-            print(f"File not found: {file_path}")
+            print(f"{YELLOW}File not found: {file_path}{NC}")
     save_created_files(created_files)
 
 def load_created_files() -> list:
@@ -146,15 +151,16 @@ def convert_to_shell_command(command: str, last_video: str, original_cwd: str) -
 def execute_command(command: str, created_files: list):
     try:
         result = subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
-        print(result.stdout)
+        print(f"{YELLOW}{result.stdout}{NC}")
+        print(f"{YELLOW}{result.stderr}{NC}")
         if "ffmpeg" in command:
             # A bit of a hack to get the output file name
             output_file = command.split(" ")[-1]
             if output_file not in created_files:
                 created_files.append(output_file)
     except subprocess.CalledProcessError as e:
-        print(f"Error executing command: {e}")
-        print(e.stderr)
+        print(f"{YELLOW}Error executing command: {e}{NC}")
+        print(f"{YELLOW}{e.stderr}{NC}")
 
 if __name__ == "__main__":
     main()
