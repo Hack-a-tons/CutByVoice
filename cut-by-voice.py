@@ -40,16 +40,13 @@ def main():
         os.chdir(original_cwd)
         return
 
-    created_files = load_created_files()
-    last_video = created_files[-1] if created_files else None
-
-    # Ask for clarification if needed
-    video_files = [f for f in os.listdir() if f.endswith(".mp4")]
-    if len(video_files) > 1 and "my last video" not in args.command and not any(f in args.command for f in video_files):
-        print("There are multiple video files in your directory. Please specify which one to use.")
-        print("Available videos: " + ", ".join(video_files))
+    if not os.listdir():
+        print("There are no files in your directory.")
         os.chdir(original_cwd)
         return
+
+    created_files = load_created_files()
+    last_video = created_files[-1] if created_files else None
 
     shell_command = convert_to_shell_command(args.command, last_video, original_cwd)
 
@@ -61,6 +58,7 @@ def main():
     os.chdir(original_cwd)
 
 def add_file(file_path: str):
+    created_files = load_created_files()
     if file_path.startswith("http"):
         # Download from URL
         try:
@@ -71,15 +69,21 @@ def add_file(file_path: str):
                 for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
             print(f"File downloaded: {filename}")
+            if filename not in created_files:
+                created_files.append(filename)
         except requests.exceptions.RequestException as e:
             print(f"Error downloading file: {e}")
     else:
         # Copy local file
         try:
             shutil.copy(file_path, ".")
-            print(f"File copied: {os.path.basename(file_path)}")
+            filename = os.path.basename(file_path)
+            print(f"File copied: {filename}")
+            if filename not in created_files:
+                created_files.append(filename)
         except FileNotFoundError:
             print(f"File not found: {file_path}")
+    save_created_files(created_files)
 
 def load_created_files() -> list:
     if os.path.exists(CREATED_FILES_FILE):
@@ -108,6 +112,9 @@ def convert_to_shell_command(command: str, last_video: str, original_cwd: str) -
     file_info_path = os.path.join(original_cwd, "file_info.py")
     with open(os.path.join(original_cwd, PROMPT_FILE), "r") as f:
         system_prompt = f.read().replace("{FILE_INFO_PATH}", file_info_path)
+
+    if last_video:
+        system_prompt = system_prompt.replace("my_last_video.mp4", last_video)
 
     client = AzureOpenAI(
         azure_endpoint=os.environ.get("AZURE_OPENAI_ENDPOINT"),
