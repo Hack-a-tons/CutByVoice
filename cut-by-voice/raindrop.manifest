@@ -1,0 +1,11 @@
+application "cut-by-voice" {
+  service "api-router" {
+    visibility = "public"
+  }
+
+  service "video-processor" {
+    visibility = "private"
+  }
+
+  smartbucket "video-storage" {}
+}
