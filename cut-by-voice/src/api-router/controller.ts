@@ -37,3 +37,24 @@
  * - `video-processor` (Service)
  * - `api-router/model.ts`
  */
+
+import { Env } from './raindrop.gen';
+import * as model from './model';
+
+async function uploadVideo(file: File, env: Env): Promise<void> {
+  await model.saveFile(file, env);
+}
+
+async function getVideo(filename: string, env: Env): Promise<Response> {
+  return await model.getFile(filename, env);
+}
+
+async function controlVideo(filename: string, command: string, env: Env): Promise<void> {
+  await env.VIDEO_PROCESSOR.processCommand(filename, command);
+}
+
+export default {
+    uploadVideo,
+    getVideo,
+    controlVideo
+}

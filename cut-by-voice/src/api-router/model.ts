@@ -24,3 +24,20 @@
  * INTEGRATION POINTS:
  * - `video-storage` (SmartBucket)
  */
+
+import { Env } from './raindrop.gen';
+
+export async function saveFile(file: File, env: Env): Promise<void> {
+  await env.VIDEO_STORAGE.put(file.name, await file.arrayBuffer());
+}
+
+export async function getFile(filename: string, env: Env): Promise<Response> {
+  const file = await env.VIDEO_STORAGE.get(filename);
+  if (!file) {
+    return new Response('File not found', { status: 404 });
+  }
+  const headers = new Headers();
+  headers.set('Content-Type', file.httpMetadata?.contentType || 'application/octet-stream');
+  headers.set('Content-Length', file.size.toString());
+  return new Response(file.body, { headers });
+}

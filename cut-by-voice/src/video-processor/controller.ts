@@ -25,3 +25,10 @@
  * INTEGRATION POINTS:
  * - `video-processor/model.ts`
  */
+
+import { Env } from './raindrop.gen';
+import * as model from './model';
+
+export async function processCommand(filename: string, command: string, env: Env): Promise<void> {
+  await model.executeCommand(filename, command, env);
+}

@@ -23,8 +23,16 @@
  * - `video-processor/controller.ts`
  */
 
-import * as controller from './controller';
+import { Service } from '@liquidmetal-ai/raindrop-framework';
+import { Env } from './raindrop.gen';
+import { processCommand as processCommandController } from './controller';
 
-export async function processCommand(filename: string, command: string): Promise<void> {
-  await controller.processCommand(filename, command);
+export default class VideoProcessorService extends Service<Env> {
+  async processCommand(filename: string, command: string): Promise<void> {
+    await processCommandController(filename, command, this.env);
+  }
+
+  fetch(request: Request): Promise<Response> {
+    return Promise.resolve(new Response('not implemented', { status: 501 }));
+  }
 }
