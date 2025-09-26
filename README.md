@@ -52,9 +52,12 @@ CutByVoice is a command-line tool that lets you describe your edits and file man
 -   **Simple edits**:
     -   `"Create a video from the first 5 seconds of my last video."`
     -   `"Take the last frame of input.mp4"`
+    -   `"Convert my last video to gif."`
+    -   `"Resize my last video to 640x480."`
 -   **Complex edits**:
     -   `"Concatenate video1.mp4 and video2.mp4."`
     -   `"Take the first half of video1.mp4, the first half of video2.mp4, and put the music from video1.mp4 on top of the output video."`
+    -   `"Add a watermark to my last video."`
 
 ### File Management
 
@@ -62,6 +65,7 @@ CutByVoice is a command-line tool that lets you describe your edits and file man
 -   `"List all files by size"`
 -   `"What is the total size occupied by all my files?"`
 -   `"What was the last file I added?"`
+-   `"Delete all png files."`
 
 ---
 
@@ -70,7 +74,7 @@ CutByVoice is a command-line tool that lets you describe your edits and file man
 CutByVoice provides a simple way to manage your files by giving each user their own workspace.
 
 - **Authenticated users**: If you provide a username using the `--user` flag, a permanent directory will be created for you in the `users` directory. All your files and command history will be stored there.
-- **Non-authenticated users**: If you don't provide a username, a new temporary directory will be created for you for each session.
+- **Anonymous users**: If you don't provide a username, a common `anonymous` directory will be used for the session.
 
 ---
 

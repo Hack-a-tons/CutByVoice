@@ -20,7 +20,7 @@ def main():
     if args.user:
         user_dir = os.path.join("users", args.user)
     else:
-        user_dir = os.path.join("users", str(uuid.uuid4()))
+        user_dir = os.path.join("users", "anonymous")
 
     os.makedirs(user_dir, exist_ok=True)
     
