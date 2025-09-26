@@ -15,21 +15,30 @@ CutByVoice is a command-line tool that lets you describe your edits and file man
 - 💻 **User-specific workspaces**: Each user gets their own directory for their files.
 - 🔒 **Security**: Includes security checks to prevent malicious commands.
 - ℹ️ **Detailed file information**: Get detailed information about your files, including duration, dimensions, and framerate for videos.
+- 📥 **Add files**: Add files from your local machine or from a URL.
 
 ---
 
 ## 🛠️ How It Works
 
-1.  **Run the CLI**:
+1.  **Add a file (optional)**:
+    ```bash
+    python cut-by-voice.py --add-file /path/to/your/file.mp4
+    ```
+    or
+    ```bash
+    python cut-by-voice.py --add-file https://example.com/video.mp4
+    ```
+2.  **Run a command**:
     ```bash
     python cut-by-voice.py "Your command here"
     ```
-2.  **Provide a user (optional)**:
+3.  **Provide a user (optional)**:
     ```bash
     python cut-by-voice.py "Your command here" --user your_username
     ```
-3.  **CutByVoice parses your request** → builds a shell command → executes it.
-4.  **See the output** in your terminal.
+4.  **CutByVoice parses your request** → builds a shell command → executes it.
+5.  **See the output** in your terminal.
 
 ---
 

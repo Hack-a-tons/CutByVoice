@@ -3,6 +3,8 @@ import subprocess
 import os
 import json
 import uuid
+import requests
+import shutil
 from openai import AzureOpenAI
 from dotenv import load_dotenv
 
@@ -13,8 +15,9 @@ def main():
     load_dotenv()
 
     parser = argparse.ArgumentParser(description="Converts natural language commands to shell commands.")
-    parser.add_argument("command", type=str, help="The natural language command to execute.")
+    parser.add_argument("command", type=str, nargs='?', default=None, help="The natural language command to execute.")
     parser.add_argument("--user", type=str, help="The user name for the session.")
+    parser.add_argument("--add-file", type=str, help="The local path or URL of the file to add.")
     args = parser.parse_args()
 
     if args.user:
@@ -27,6 +30,16 @@ def main():
     original_cwd = os.getcwd()
     os.chdir(user_dir)
 
+    if args.add_file:
+        add_file(args.add_file)
+        os.chdir(original_cwd)
+        return
+
+    if not args.command:
+        parser.print_help()
+        os.chdir(original_cwd)
+        return
+
     created_files = load_created_files()
     last_video = created_files[-1] if created_files else None
 
@@ -35,6 +48,7 @@ def main():
     if len(video_files) > 1 and "my last video" not in args.command and not any(f in args.command for f in video_files):
         print("There are multiple video files in your directory. Please specify which one to use.")
         print("Available videos: " + ", ".join(video_files))
+        os.chdir(original_cwd)
         return
 
     shell_command = convert_to_shell_command(args.command, last_video, original_cwd)
@@ -45,6 +59,27 @@ def main():
     save_created_files(created_files)
     
     os.chdir(original_cwd)
+
+def add_file(file_path: str):
+    if file_path.startswith("http"):
+        # Download from URL
+        try:
+            response = requests.get(file_path, stream=True)
+            response.raise_for_status()
+            filename = os.path.basename(file_path)
+            with open(filename, "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+            print(f"File downloaded: {filename}")
+        except requests.exceptions.RequestException as e:
+            print(f"Error downloading file: {e}")
+    else:
+        # Copy local file
+        try:
+            shutil.copy(file_path, ".")
+            print(f"File copied: {os.path.basename(file_path)}")
+        except FileNotFoundError:
+            print(f"File not found: {file_path}")
 
 def load_created_files() -> list:
     if os.path.exists(CREATED_FILES_FILE):
