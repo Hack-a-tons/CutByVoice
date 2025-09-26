@@ -14,6 +14,7 @@ CutByVoice is a command-line tool that lets you describe your edits and file man
 - 🤔 **Interactive**: Asks for clarification when the command is ambiguous.
 - 💻 **User-specific workspaces**: Each user gets their own directory for their files.
 - 🔒 **Security**: Includes security checks to prevent malicious commands.
+- ℹ️ **Detailed file information**: Get detailed information about your files, including duration, dimensions, and framerate for videos.
 
 ---
 
@@ -57,6 +58,7 @@ CutByVoice is a command-line tool that lets you describe your edits and file man
 
 ### File Management
 
+-   `"What files do I have?"`
 -   `"List all files by size"`
 -   `"What is the total size occupied by all my files?"`
 -   `"What was the last file I added?"`

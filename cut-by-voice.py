@@ -56,7 +56,12 @@ def save_created_files(created_files: list):
     with open(CREATED_FILES_FILE, "w") as f:
         json.dump(created_files, f)
 
-def sanitize_command(command: str) -> str:
+def sanitize_command(command: str, original_cwd: str) -> str:
+    file_info_path = os.path.join(original_cwd, "file_info.py")
+    # Allow the file_info.py script
+    if file_info_path in command:
+        return command
+
     # Add more sanitization rules here
     if ".." in command or "~" in command:
         return "echo 'Error: command contains invalid characters.'"
@@ -65,8 +70,9 @@ def sanitize_command(command: str) -> str:
     return command
 
 def convert_to_shell_command(command: str, last_video: str, original_cwd: str) -> str:
+    file_info_path = os.path.join(original_cwd, "file_info.py")
     with open(os.path.join(original_cwd, PROMPT_FILE), "r") as f:
-        system_prompt = f.read()
+        system_prompt = f.read().replace("{FILE_INFO_PATH}", file_info_path)
 
     client = AzureOpenAI(
         azure_endpoint=os.environ.get("AZURE_OPENAI_ENDPOINT"),
@@ -93,7 +99,7 @@ def convert_to_shell_command(command: str, last_video: str, original_cwd: str) -
     if "pwd" in shell_command:
         return "echo 'pwd command is not allowed'"
 
-    return sanitize_command(shell_command)
+    return sanitize_command(shell_command, original_cwd)
 
 def execute_command(command: str, created_files: list):
     try:
