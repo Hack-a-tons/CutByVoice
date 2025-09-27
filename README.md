@@ -98,3 +98,9 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 ## 📜 License
 
 MIT License — free to use, modify, and share.
+
+---
+
+## 🏆 Hackathon
+
+This project was developed for the [Coding with AI Hackathon](https://luma.com/ai-coding-hack) on September 26, 2025, at the AWS Loft in San Francisco.
