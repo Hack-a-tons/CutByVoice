@@ -25,20 +25,16 @@ export default class ApiRouterService extends Service<Env> {
     });
 
     app.post('/add-file', async (c) => {
-        try {
-            const body = await c.req.json();
-            if (typeof body !== 'object' || body === null || Array.isArray(body)) {
-                return c.json({ error: 'Invalid request body' }, 400);
-            }
-            const { file_path, user } = body as { file_path: string, user: string };
-            if (typeof file_path !== 'string' || !user) {
-                return c.json({ error: 'Malformed payload' }, 400);
-            }
-            const message = await controller.addFile(file_path, user, c.env);
-            return c.json({ message });
-        } catch (e) {
-            return c.json({ error: 'Invalid JSON' }, 400);
+        const formData = await c.req.formData();
+        const file = formData.get('file');
+        const user = formData.get('user');
+
+        if (!file || !user) {
+            return c.json({ error: 'Malformed payload' }, 400);
         }
+
+        const message = await controller.addFile(file as File, user as string, c.env);
+        return c.json({ message });
     });
 
     return app.fetch(request, env, ctx);
