@@ -12,6 +12,12 @@ CutByVoice is a tool that simplifies the video editing process by allowing you t
 
 ---
 
+## 🎬 Demo
+
+[![CutByVoice Demo](https://img.youtube.com/vi/N4bfD_4he0A/0.jpg)](https://www.youtube.com/watch?v=N4bfD_4he0A)
+
+---
+
 ## 🚀 Current Implementation: The CLI
 
 The first version of CutByVoice is a powerful command-line tool that lets you:
