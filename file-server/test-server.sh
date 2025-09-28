@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Change to script directory
+cd "$(dirname "$0")"
+
 # Load environment variables
 if [ -f .env ]; then
     export $(grep -v '^#' .env | xargs)
