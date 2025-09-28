@@ -1,5 +1,7 @@
 # 🎬 CutByVoice
 
+> **⚠️ This project has been superseded by [PilotDirector](https://github.com/Hack-a-tons/PilotDirector)**
+
 **Edit videos and manage your files using natural language — powered by AI and shell commands.**
 
 ## The Problem
