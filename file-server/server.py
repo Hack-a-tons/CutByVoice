@@ -4,11 +4,14 @@ import os
 import uuid
 from werkzeug.utils import secure_filename
 import re
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
 # This should be stored securely, e.g., in an environment variable
-EXPECTED_API_KEY = "your-api-key" 
+EXPECTED_API_KEY = os.getenv("EXPECTED_API_KEY", "your-api-key") 
 
 def is_safe_path(path, base_dir):
     resolved_base = os.path.realpath(base_dir)
@@ -88,4 +91,5 @@ def execute_command_endpoint():
         return jsonify({"error": str(e), "stdout": e.stdout, "stderr": e.stderr}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.getenv('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
