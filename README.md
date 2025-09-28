@@ -1,5 +1,7 @@
 # 🎬 CutByVoice
 
+> **⚠️ This project has been superseded by [PilotDirector](https://github.com/Hack-a-tons/PilotDirector)**
+
 **Edit videos and manage your files using natural language — powered by AI and shell commands.**
 
 ## The Problem
@@ -44,6 +46,18 @@ The future architecture will consist of two main components:
 
 This hybrid approach will allow us to leverage the power of the Raindrop platform for the AI and API routing, while still having the flexibility to use `ffmpeg` on a dedicated server.
 
+### Frame Content Analysis
+
+A key feature of the server-based architecture will be the ability to analyze the content of video frames using vision models. This will allow users to ask questions like:
+
+-   *"Find the frame where the scene with the girl ends and the scene with the spaceships begins."*
+
+To implement this, we will use a combination of scene change detection tools (like `ffmpeg`'s `select` filter) and vision models (like GPT-4.1 or similar). The process will be as follows:
+
+1.  **Detect scene changes**: Use `ffmpeg` to identify the frames where scene changes occur.
+2.  **Extract frames**: Extract the last frame of the first scene and the first frame of the second scene.
+3.  **Analyze frames**: Use a vision model to analyze the content of the extracted frames and determine if they match the user's description.
+
 ---
 
 ## 🛠️ How to Use the CLI
@@ -86,3 +100,9 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 ## 📜 License
 
 MIT License — free to use, modify, and share.
+
+---
+
+## 🏆 Hackathon
+
+This project was developed for the [Coding with AI Hackathon](https://luma.com/ai-coding-hack) on September 26, 2025, at the AWS Loft in San Francisco.

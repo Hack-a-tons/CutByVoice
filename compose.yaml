@@ -1,0 +1,9 @@
+services:
+  file-server:
+    build: ./file-server
+    ports:
+      - "${FILE_SERVER_PORT}:5000"
+    volumes:
+      - ./users:/app/users
+    env_file:
+      - ./file-server/.env
